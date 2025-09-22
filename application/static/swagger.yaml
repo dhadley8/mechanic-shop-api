@@ -1,0 +1,616 @@
+openapi: 3.0.0
+info:
+  title: Mechanic Shop API
+  version: 1.0.0
+  description: API for managing customers, mechanics, service tickets, and inventory in a mechanic shop.
+servers:
+  - url: http://127.0.0.1:5000
+paths:
+  /customers:
+    get:
+      summary: Get paginated list of customers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Number of customers per page
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      summary: Add a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberPayload'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMemberResponse'
+  /customers/login:
+    post:
+      summary: Login as customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: JWT token returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /customers/{customer_id}:
+    get:
+      summary: Get customer by ID
+      parameters:
+        - in: path
+          name: customer_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    put:
+      summary: Update customer by ID
+      parameters:
+        - in: path
+          name: customer_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberPayload'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMemberResponse'
+    delete:
+      summary: Delete customer by ID
+      parameters:
+        - in: path
+          name: customer_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMemberResponse'
+  /mechanics:
+    get:
+      summary: Get all mechanics
+      responses:
+        '200':
+          description: List of mechanics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Mechanic'
+    post:
+      summary: Add a new mechanic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMechanicPayload'
+      responses:
+        '201':
+          description: Mechanic created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mechanic'
+  /mechanics/{mechanic_id}:
+    get:
+      summary: Get mechanic by ID
+      parameters:
+        - in: path
+          name: mechanic_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mechanic details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mechanic'
+    put:
+      summary: Update mechanic by ID
+      parameters:
+        - in: path
+          name: mechanic_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMechanicPayload'
+      responses:
+        '200':
+          description: Mechanic updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mechanic'
+    delete:
+      summary: Delete mechanic by ID
+      parameters:
+        - in: path
+          name: mechanic_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Mechanic deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMechanicResponse'
+  /service_tickets:
+    get:
+      summary: Get all service tickets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of service tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceTicket'
+    post:
+      summary: Create a new service ticket
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceTicketPayload'
+      responses:
+        '201':
+          description: Service ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceTicket'
+  /service_tickets/{ticket_id}:
+    get:
+      summary: Get service ticket by ID
+      parameters:
+        - in: path
+          name: ticket_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Service ticket details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceTicket'
+    put:
+      summary: Update service ticket by ID
+      parameters:
+        - in: path
+          name: ticket_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceTicketPayload'
+      responses:
+        '200':
+          description: Service ticket updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceTicket'
+    delete:
+      summary: Delete service ticket by ID
+      parameters:
+        - in: path
+          name: ticket_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Service ticket deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteServiceTicketResponse'
+  /inventory:
+    get:
+      summary: Get all inventory parts
+      responses:
+        '200':
+          description: List of inventory parts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+    post:
+      summary: Add a new inventory part
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryPayload'
+      responses:
+        '201':
+          description: Inventory part created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+  /inventory/{part_id}:
+    get:
+      summary: Get inventory part by ID
+      parameters:
+        - in: path
+          name: part_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Inventory part details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+    put:
+      summary: Update inventory part by ID
+      parameters:
+        - in: path
+          name: part_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInventoryPayload'
+      responses:
+        '200':
+          description: Inventory part updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+    delete:
+      summary: Delete inventory part by ID
+      parameters:
+        - in: path
+          name: part_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Inventory part deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    # Customers
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+    CreateMemberPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        DOB:
+          type: string
+          format: date
+        password:
+          type: string
+      required:
+        - name
+        - email
+        - DOB
+        - password
+    CreateMemberResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        DOB:
+          type: string
+        password:
+          type: string
+    UpdateMemberPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        DOB:
+          type: string
+          format: date
+        password:
+          type: string
+        phone:
+          type: string
+      required:
+        - name
+        - email
+        - DOB
+    UpdateMemberResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        DOB:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+    DeleteMemberResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+    # Mechanics
+    Mechanic:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        salary:
+          type: number
+          format: float
+    CreateMechanicPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        salary:
+          type: number
+          format: float
+      required:
+        - name
+        - email
+        - phone
+        - salary
+    UpdateMechanicPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        salary:
+          type: number
+          format: float
+      required:
+        - name
+        - email
+        - phone
+        - salary
+    DeleteMechanicResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+    # Service Tickets
+    ServiceTicket:
+      type: object
+      properties:
+        id:
+          type: integer
+        vin:
+          type: string
+        service_date:
+          type: string
+          format: date
+        service_description:
+          type: string
+        customer_id:
+          type: integer
+    CreateServiceTicketPayload:
+      type: object
+      properties:
+        vin:
+          type: string
+        service_date:
+          type: string
+          format: date
+        service_description:
+          type: string
+        customer_id:
+          type: integer
+      required:
+        - vin
+        - service_date
+        - service_description
+        - customer_id
+    UpdateServiceTicketPayload:
+      type: object
+      properties:
+        vin:
+          type: string
+        service_date:
+          type: string
+          format: date
+        service_description:
+          type: string
+        customer_id:
+          type: integer
+      required:
+        - vin
+        - service_date
+        - service_description
+        - customer_id
+    DeleteServiceTicketResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+    # Inventory
+    Inventory:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+    CreateInventoryPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+      required:
+        - name
+        - price
+    UpdateInventoryPayload:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+      required:
+        - name
+        - price
+    DeleteInventoryResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+    # Auth
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        message:
+          type: string
