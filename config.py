@@ -1,16 +1,16 @@
-class Config:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///myshop.db'  # Or your MySQL URI
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'your_secret_key'
+import os
 
-APPLICATION_STRUCTURE = {
-    'blueprints': [
-        'customers',
-        'tickets',
-        'service_mechanics',
-        'mechanics',
-        'inventory',
-        # ... other blueprints ...
-    ],
-    # ... other application parts ...
-}
+class DevelopmentConfig: 
+    SQLALCHEMY_DATABASE_URI = 'MYSQL+pymysql://user:password@localhost/mechanic_shop_db'
+    DEBUG = True
+    CACHE_TYPE = 'SimpleCache'
+
+
+class TestingConfig:
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///testing.db'
+    DEBUG = True
+    CACHE_TYPE = "SimpleCache"
+
+class ProductionConfig:
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    CACHE_TYPE = "SimpleCache"

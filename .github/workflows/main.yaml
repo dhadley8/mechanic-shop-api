@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.12 
+          python-version: 3.12
 
       - name: Create virtual environment
         run: |
@@ -27,10 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-        - name: Run tests
-          run: python -m unittest discover -s tests -p 'test_*.py'
-          env:
-            FLASK_ENV: development
+      - name: Run tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+        env:
+          FLASK_ENV: development
+
       - name: Print debugging information
         run: |
           echo "Python Version: $(python --version)"
