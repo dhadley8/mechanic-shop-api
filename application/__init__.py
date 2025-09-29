@@ -5,7 +5,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_caching import Cache
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask import Blueprint
 
 db = SQLAlchemy()
 ma = Marshmallow()
@@ -19,12 +18,6 @@ swaggerui_blueprint = get_swaggerui_blueprint(
     API_URL,
     config={'app_name': "Mechanic Shop API"}
 )
-
-inventory_bp = Blueprint('inventory', __name__)
-
-@inventory_bp.route('/', methods=['GET'])
-def get_inventory():
-    return {"message": "Inventory endpoint"}
 
 def create_app():
     app = Flask(__name__)
