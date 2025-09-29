@@ -1,45 +1,11 @@
-import unittest
-import json
-from application import create_app, db
-
-class TestInventory(unittest.TestCase):
-    
-    def setUp(self):
-        self.app = create_app()
-        self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        self.client = self.app.test_client()
-        
-        with self.app.app_context():
-            db.create_all()
-    
-    def tearDown(self):
-        with self.app.app_context():
-            db.drop_all()
-    
-    def test_get_inventory(self):
-        response = self.client.get('/inventory/')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_add_inventory(self):
-        data = {
-            "name": "Brake Pad",
-            "price": 29.99
-        }
-        response = self.client.post('/inventory/', 
-                                  data=json.dumps(data),
-                                  content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-    
-    def test_add_inventory_missing_field(self):
-        data = {
-            "name": "Oil Filter"
-            # Missing price
-        }
-        response = self.client.post('/inventory/',
-                                  data=json.dumps(data),
-                                  content_type='application/json')
-        self.assertEqual(response.status_code, 400)
-
-if __name__ == '__main__':
-    unittest.main()
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Marshmallow==0.15.0
+marshmallow-sqlalchemy==0.29.0
+Flask-Limiter==3.5.0
+Flask-Caching==2.1.0
+flask-swagger-ui==4.11.1
+python-jose==3.3.0
+PyMySQL==1.1.0
+Werkzeug==2.3.7
+pytest==7.4.2
