@@ -1,45 +1,45 @@
-blinker==1.9.0
-cachelib==0.13.0
-click==8.2.1
-colorama==0.4.6
-Deprecated==1.2.18
-ecdsa==0.19.1
-flake8==7.3.0
-Flask==3.1.2
-Flask-Caching==2.3.1
-Flask-Limiter==3.12
-flask-marshmallow==1.3.0
-Flask-SQLAlchemy==3.1.1
-flask-swagger==0.2.14
-flask-swagger-ui==5.21.0
-greenlet==3.2.4
-gunicorn==23.0.0
-itsdangerous==2.2.0
-Jinja2==3.1.6
-limits==5.5.0
-markdown-it-py==4.0.0
-MarkupSafe==3.0.2
-marshmallow==4.0.1
-marshmallow-sqlalchemy==1.4.2
-mccabe==0.7.0
-mdurl==0.1.2
-mysql-connector-python==9.4.0
-ordered-set==4.1.0
-packaging==25.0
-psycopg2==2.9.10
-pyasn1==0.6.1
-pycodestyle==2.14.0
-pyflakes==3.4.0
-Pygments==2.19.2
-PyJWT==2.10.1
-pytest>=7.0.0
-python-dotenv==1.1.1
-python-jose==3.5.0
-PyYAML==6.0.2
-rich==13.9.4
-rsa==4.9.1
-six==1.17.0
-SQLAlchemy==2.0.43
-typing_extensions==4.15.0
-Werkzeug==3.1.3
-wrapt==1.17.3
+import unittest
+import json
+from application import create_app, db
+
+class TestInventory(unittest.TestCase):
+    
+    def setUp(self):
+        self.app = create_app()
+        self.app.config['TESTING'] = True
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.client = self.app.test_client()
+        
+        with self.app.app_context():
+            db.create_all()
+    
+    def tearDown(self):
+        with self.app.app_context():
+            db.drop_all()
+    
+    def test_get_inventory(self):
+        response = self.client.get('/inventory/')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_add_inventory(self):
+        data = {
+            "name": "Brake Pad",
+            "price": 29.99
+        }
+        response = self.client.post('/inventory/', 
+                                  data=json.dumps(data),
+                                  content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+    
+    def test_add_inventory_missing_field(self):
+        data = {
+            "name": "Oil Filter"
+            # Missing price
+        }
+        response = self.client.post('/inventory/',
+                                  data=json.dumps(data),
+                                  content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+if __name__ == '__main__':
+    unittest.main()
